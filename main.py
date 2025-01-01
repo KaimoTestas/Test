@@ -5,28 +5,30 @@ from random import randint
 def run(cmd):
     subprocess.run(cmd, shell=True, check=True)
 
-# Git identity
+# Git identity config (must match your GitHub user settings)
 run('git config user.name "Kaimo Testas"')
 run('git config user.email "kaimetis.lt@gmail.com"')
 run('git config commit.gpgsign false')
 
-# Settings
-start_date = datetime(2024, 1, 1)
-end_date = datetime(2024, 12, 31)
-file_name = "contributions.txt"
+# Range: Jan 1, 2025 to today
+start_date = datetime(2025, 1, 1)
+end_date = datetime.now()
+file_name = "contributions_2025.txt"
 
 current_date = start_date
 
-while current_date <= end_date:
-    commits_today = randint(1, 5)  # fewer commits/day = more natural
+while current_date.date() <= end_date.date():
+    commits_today = randint(1, 5)  # Natural-looking range
     for _ in range(commits_today):
-        timestamp = current_date.replace(hour=12, minute=randint(0, 59))  # randomize time a bit
-        date_str = timestamp.strftime('%Y-%m-%dT%H:%M:%S')
+        time_hour = randint(8, 18)  # Between 8:00–18:59
+        time_minute = randint(0, 59)
+        commit_time = current_date.replace(hour=time_hour, minute=time_minute, second=0)
+        date_str = commit_time.strftime('%Y-%m-%dT%H:%M:%S')
 
         with open(file_name, 'a') as f:
             f.write(f"Commit on {date_str}\n")
 
         run('git add .')
         run(f'git commit --date="{date_str}" -m "Contribution: {date_str}"')
-    
+
     current_date += timedelta(days=1)
